@@ -2,30 +2,51 @@
 var angularApp = angular.module('angularApp', ["ngMessages","ngResource"]);
 
 // CONTROLLERS
-angularApp.controller('mainController', ['$scope',"$log","$filter","$resource","$timeout", function ($scope,$log,$filter,$resource,$timeout) {
+angularApp.controller('mainController', ['$scope',"$log","$filter","$resource","$timeout","$http", function ($scope,$log,$filter,$resource,$timeout,$http) {
     
-	function count(){
+	$scope.twitterLink = ""; 
 
-		var x = 0;
+	$scope.characters = 5;
 
-		function plusOne(){
-			x++;
-
-			$timeout(function(){
-				$scope.name = x;
-				plusOne();
-			},1000);
-		}
-
-		return plusOne;
+	$scope.lowercasehandle = function()
+	{
+		return $filter('lowercase')($scope.twitterLink);
 	};
 
-	$scope.name = "octavio";
+	$scope.alertClick = function(){
+		alert("NO ME TOQUES... ");
+	}
 
-	$scope.myCount = count()
 
-	$scope.myCount();
+	$http({
+		method:'GET',
+		url: 'http://octavioparedes.com.mx/ANDON/getTabla.php'
+	}).then(function(success){
+		console.log("EXITO");
+		console.log(success);
+
+		var jsons = (""+success.data).split("<br>");
+		var reglas = [];
+
+		for(var i = 0;i<jsons.length-1;i++)
+		{
+			console.log("valor:",i,jsons[i]);
+			reglas.push(JSON.parse(jsons[i]));
+			//console.log("OBJETOS:", reglas[i]);
+		}
+
+		$scope.rules = reglas;
+
+	},function(error,status){
+		console.log("error....");
+		console.log(error);
+	});
+
+	$scope.addRule = function(){
+		console.log($scope.newRule);
+		$scope.rules.push({CAUSA:$scope.newRule});
+	};
+
+	
 }]);
-
-
 
